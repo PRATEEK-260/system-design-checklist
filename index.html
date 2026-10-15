@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>System Design Checklist</title>
+<meta name="description" content="A 10-week system design study checklist: every roadmap topic with the best free video or article and a hands-on practice task.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b6e69'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a single study column, like an engineer's lab notebook on faint graph paper — summary first, then one section per phase. */
+:root {
+  --bg: #f3f6f8;
+  --grid: rgba(30, 70, 90, 0.06);
+  --surface: #ffffff;
+  --ink: #14212b;
+  --muted: #5b6b77;
+  --line: #d9e1e7;
+  --accent: #0b6e69;
+  --accent-soft: #e0f1ef;
+  --video: #b4462c;
+  --video-soft: #fbe9e4;
+  --read: #2a5aa6;
+  --read-soft: #e5edfa;
+  --done-ink: #8796a1;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1418; --grid: rgba(140, 200, 210, 0.05); --surface: #151d23; --ink: #e3eaee; --muted: #93a3ae;
+    --line: #26323a; --accent: #4cc3b9; --accent-soft: #143331; --video: #f08a6e; --video-soft: #3a211b;
+    --read: #8db2ef; --read-soft: #1b2840; --done-ink: #61717c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1418; --grid: rgba(140, 200, 210, 0.05); --surface: #151d23; --ink: #e3eaee; --muted: #93a3ae;
+  --line: #26323a; --accent: #4cc3b9; --accent-soft: #143331; --video: #f08a6e; --video-soft: #3a211b;
+  --read: #8db2ef; --read-soft: #1b2840; --done-ink: #61717c; color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font: 15px/1.55 var(--font-body);
+}
+.wrap {
+  max-width: 880px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+a { color: inherit; }
+h1, h2 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(30px, 6vw, 44px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+.lede { color: var(--muted); max-width: 62ch; margin: 8px 0 0; }
+
+/* Summary */
+.summary {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 18px 20px; display: grid; gap: 14px;
+}
+.meter-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.big { font-family: var(--font-display); font-size: 40px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.big small { font-size: 18px; color: var(--muted); font-weight: 600; }
+.meter { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.meter > span { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s ease; }
+.next { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; }
+.label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.next a { font-weight: 600; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.filters { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.filters button {
+  font: 500 13px var(--font-body); color: var(--muted); background: transparent; border: 0; padding: 7px 14px; cursor: pointer;
+}
+.filters button + button { border-left: 1px solid var(--line); }
+.filters button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.save { font-size: 12.5px; color: var(--muted); }
+.save b { color: var(--accent); font-weight: 600; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); align-items: center; }
+
+/* Sections */
+details.sec { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+details.sec > summary {
+  list-style: none; cursor: pointer; padding: 16px 20px; display: grid; gap: 8px;
+}
+details.sec > summary::-webkit-details-marker { display: none; }
+.sec-top { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.sec-title { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+.sec-title h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.chev { font-family: var(--font-mono); color: var(--muted); transition: transform .2s; display: inline-block; }
+details[open] .chev { transform: rotate(90deg); }
+.week { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.count { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sec .meter { height: 4px; }
+.sec-note { margin: 0; padding: 0 20px 6px; color: var(--muted); font-size: 13.5px; max-width: 70ch; }
+ul.items { list-style: none; margin: 0; padding: 4px 0 8px; }
+li.item { display: grid; grid-template-columns: 28px 1fr; gap: 4px 10px; padding: 12px 20px; border-top: 1px solid var(--line); }
+li.item[hidden] { display: none; }
+.item input[type="checkbox"] {
+  appearance: none; width: 20px; height: 20px; margin: 2px 0 0; border: 2px solid var(--muted); border-radius: 5px;
+  cursor: pointer; display: grid; place-content: center; background: var(--surface);
+}
+.item input[type="checkbox"]::after { content: ""; width: 10px; height: 6px; border: solid var(--surface); border-width: 0 0 2.5px 2.5px; transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+.item input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+.item input[type="checkbox"]:checked::after { opacity: 1; }
+.item input:focus-visible, .filters button:focus-visible, summary:focus-visible, .res a:focus-visible, .next a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.body { min-width: 0; display: grid; gap: 7px; }
+.t { font-weight: 600; font-size: 15.5px; cursor: pointer; }
+.done .t { color: var(--done-ink); text-decoration: line-through; text-decoration-thickness: 1px; }
+.res { display: flex; flex-wrap: wrap; gap: 6px; }
+.res a {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 13px; text-decoration: none;
+  border: 1px solid var(--line); border-radius: 6px; padding: 3px 9px 3px 7px; max-width: 100%;
+}
+.res a:hover { border-color: var(--muted); }
+.res a .k { font: 500 10px var(--font-mono); letter-spacing: .06em; padding: 1px 5px; border-radius: 3px; }
+.res a.v .k { background: var(--video-soft); color: var(--video); }
+.res a.r .k { background: var(--read-soft); color: var(--read); }
+.res a.best { border-color: var(--accent); }
+.res a.best::after { content: "best"; font: 500 10px var(--font-mono); color: var(--accent); letter-spacing: .05em; }
+.res a span.n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.practice { font-size: 13.5px; color: var(--ink); background: var(--accent-soft); border-radius: 6px; padding: 7px 10px; }
+.practice .label { color: var(--accent); margin-right: 6px; }
+.done .practice { opacity: .6; }
+.empty { padding: 14px 20px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); }
+footer { color: var(--muted); font-size: 12.5px; }
+@media (max-width: 520px) {
+  li.item { padding: 12px 14px; }
+  details.sec > summary { padding: 14px; }
+  .sec-note { padding: 0 14px 6px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>System Design Checklist</h1>
+    <p class="lede">Every topic from the roadmap.sh System Design roadmap, plus the interview topics it misses. Each one has the best free video or article (marked <b>best</b>), plus a practice task. Tick a topic when you've finished both.</p>
+  </header>
+
+  <section class="summary" aria-label="Progress">
+    <div class="meter-row"><span class="big" id="pct">0%</span><span class="count" id="totals">0 of 0 topics done</span></div>
+    <div class="meter" role="progressbar" aria-label="Overall progress" id="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="meterFill" style="width:0%"></span></div>
+    <div class="next"><span class="label">Next up</span><a id="nextLink" href="#">Start at the top</a></div>
+    <div class="controls">
+      <div class="filters" role="group" aria-label="Show">
+        <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
+        <button type="button" id="f-todo" data-f="todo" aria-pressed="false">To do</button>
+        <button type="button" id="f-done" data-f="done" aria-pressed="false">Done</button>
+      </div>
+      <span class="save" id="saveState">Saved in this browser</span>
+    </div>
+    <div class="legend">
+      <span class="res"><a class="v" tabindex="-1" aria-hidden="true"><span class="k">VIDEO</span><span class="n">YouTube</span></a></span>
+      <span class="res"><a class="r" tabindex="-1" aria-hidden="true"><span class="k">READ</span><span class="n">Article or guide</span></a></span>
+      <span>Practice tasks that use Docker run on your own laptop.</span>
+    </div>
+  </section>
+
+  <main id="sections" style="display:grid;gap:14px"></main>
+
+  <footer>Sources: Gaurav Sen, ByteByteGo and Hello Interview on YouTube; karanpratapsingh/system-design; donnemartin/system-design-primer; Azure Architecture Center; Google SRE book; AWS Builders' Library.</footer>
+</div>
+
+<script>
+const Y = id => "https://www.youtube.com/watch?v=" + id;
+const K = a => "https://github.com/karanpratapsingh/system-design#" + a;
+const P = a => "https://github.com/donnemartin/system-design-primer#" + a;
+const PS = s => "https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/" + s + "/README.md";
+const AZ = p => "https://learn.microsoft.com/en-us/azure/architecture/patterns/" + p;
+const AP = p => "https://learn.microsoft.com/en-us/azure/architecture/antipatterns/" + p + "/";
+// Resource tuple: [kind ("v" video | "r" read), label, url]. The first one listed is the best pick.
+
+const SECTIONS = [
+{ id: "foundations", name: "Foundations", week: "Week 1", note: "How to think about scale, plus the networking basics everything else depends on.", items: [
+  { id: "intro", t: "What is system design and how to approach it", r: [["v","Gaurav Sen · System Design Primer · 9 min",Y("SqcXvc3ZmRU")],["r","karanpratapsingh · What is system design",K("what-is-system-design")]], p: "Draw on Excalidraw how a single-server app evolves from 1 user to 1M users: add a load balancer, cache, DB replica and CDN step by step." },
+  { id: "perf-latency", t: "Performance vs scalability · Latency vs throughput", r: [["r","Primer · Performance vs scalability",P("performance-vs-scalability")],["r","Primer · Latency vs throughput",P("latency-vs-throughput")]], p: "Write one example of a system that is fast for one user but doesn't scale, and explain why in 3 lines." },
+  { id: "latency-numbers", t: "Latency numbers every programmer should know", r: [["v","ByteByteGo · Latency numbers",Y("FqR5vESuKe0")],["r","Primer · Latency numbers table",P("latency-numbers-every-programmer-should-know")]], p: "Without looking, order these by speed: L1 cache, RAM, SSD read, same-datacenter round trip, cross-continent round trip. Then check." },
+  { id: "estimation", t: "Back-of-the-envelope estimation", r: [["v","ByteByteGo · Back-of-the-envelope estimation",Y("UC5xf8FbdJc")],["v","Gaurav Sen · Capacity planning (YouTube storage)",Y("0myM0k1mjZw")],["r","Primer · Powers of two table",P("powers-of-two-table")]], p: "Estimate Twitter: daily active users → tweets/day → write QPS, read QPS, storage per year. Do one estimate like this every day this week." },
+  { id: "networking", t: "IP, OSI model, TCP vs UDP", r: [["r","karanpratapsingh · IP",K("ip")],["v","ByteByteGo · OSI model",Y("0y6FtKsg6J4")],["r","karanpratapsingh · TCP and UDP",K("tcp-and-udp")]], p: "Name one app that should use UDP and one that needs TCP, and explain why. Watch a TCP handshake with `sudo tcpdump -i any port 443` while you curl a site." },
+  { id: "internet", t: "What happens when you type a URL", r: [["v","ByteByteGo · How the internet works · 9 min",Y("sMHzfigUxz4")]], p: "Write the full journey in 10 steps: DNS → TCP → TLS → HTTP → server → response → render." },
+  { id: "dns", t: "DNS", r: [["v","ByteByteGo · Everything about DNS",Y("27r4Bzuj5NQ")],["r","karanpratapsingh · DNS",K("domain-name-system-dns")]], p: "Run `dig +trace google.com` and label the root, TLD and authoritative servers in the output." },
+  { id: "http", t: "HTTP/1.1 vs HTTP/2 vs HTTP/3 and status codes", r: [["v","ByteByteGo · HTTP/1 to HTTP/2 to HTTP/3",Y("a-sBfyiXysI")],["v","ByteByteGo · HTTP status codes",Y("qmpUfWN7hh4")]], p: "Run `curl -v --http2 https://github.com` and note the protocol, headers and status code. When would you return 409, 429 and 503?" },
+  { id: "scaling", t: "Vertical vs horizontal scaling", r: [["v","Gaurav Sen · Horizontal vs vertical scaling · 8 min",Y("xpDnVSmNFX0")],["r","karanpratapsingh · Scalability",K("scalability")]], p: "Make a table: 3 pros and 3 cons of each, and when you'd pick each." }
+]},
+{ id: "blocks", name: "Core building blocks", week: "Week 2", note: "Load balancers, proxies, CDNs and caches. The pieces in almost every design.", items: [
+  { id: "lb", t: "Load balancing (L4 vs L7, algorithms)", r: [["v","Gaurav Sen · What is load balancing · 14 min",Y("K0Ta65OqQkY")],["v","ByteByteGo · Top 6 load balancing algorithms",Y("dBmxNsS3BGE")],["r","karanpratapsingh · Load balancing",K("load-balancing")]], p: "Lab: run 3 small app containers behind Nginx in Docker. Watch requests round-robin, then switch to least_conn and ip_hash." },
+  { id: "proxy", t: "Proxy vs reverse proxy vs load balancer vs API gateway", r: [["v","ByteByteGo · Reverse proxy vs API gateway vs LB",Y("RqfaTIWc3LQ")],["r","karanpratapsingh · Proxy",K("proxy")],["r","Primer · Load balancer vs reverse proxy",P("load-balancer-vs-reverse-proxy")]], p: "Write one line on what each does and one real product for each (e.g. Nginx, HAProxy, Kong, AWS ALB)." },
+  { id: "cdn", t: "CDN (push vs pull)", r: [["v","ByteByteGo · What is a CDN",Y("RI9np1LWzqw")],["r","karanpratapsingh · CDN",K("content-delivery-network-cdn")]], p: "Run `curl -I` on a big site and find the CDN cache headers (cf-cache-status, x-cache, age). List what Instagram would serve from a CDN and what it wouldn't." },
+  { id: "caching", t: "Caching basics: where to cache, eviction", r: [["v","Gaurav Sen · Caching in distributed systems · 11 min",Y("zw7VwIlkPPc")],["r","karanpratapsingh · Caching",K("caching")],["v","ByteByteGo · Cache systems every developer should know",Y("dGAgxozNWFE")]], p: "Lab: put Redis in front of a slow API endpoint (add a 500 ms sleep). Measure latency before and after." },
+  { id: "cache-strategies", t: "Cache update strategies: cache-aside, write-through, write-behind, refresh-ahead", r: [["r","Primer · When to update the cache",P("when-to-update-the-cache")],["r","Azure · Cache-aside pattern",AZ("cache-aside")]], p: "In your Redis lab, implement cache-aside with a TTL, then write-through. Write down what happens to stale data in each." },
+  { id: "cache-pitfalls", t: "Caching pitfalls: stampede, penetration, avalanche", r: [["v","ByteByteGo · Caching pitfalls",Y("wh98s0XhMmQ")]], p: "Add a fix for one pitfall to your lab: TTL jitter, request coalescing, or caching empty results." },
+  { id: "availability", t: "Availability in numbers, single points of failure", r: [["v","Gaurav Sen · Avoiding single points of failure · 7 min",Y("-BOysyYErLY")],["r","karanpratapsingh · Availability",K("availability")],["r","Primer · Availability in numbers",P("availability-in-numbers")]], p: "Calculate: LB (99.99%) → 2 app servers in parallel (99.9% each) → DB (99.95%). What's the total availability, and how many minutes of downtime per month is that?" },
+  { id: "availability-patterns", t: "Fail-over, active-active vs active-passive, clustering", r: [["r","Primer · Availability patterns",P("availability-patterns")],["r","karanpratapsingh · Clustering",K("clustering")]], p: "Draw an active-passive database setup with a heartbeat. What data can be lost during failover, and how would you reduce it?" }
+]},
+{ id: "data", name: "Databases and storage", week: "Week 3", note: "Choosing, scaling and partitioning data. This is the core of most interviews.", items: [
+  { id: "db-choose", t: "SQL vs NoSQL: how to choose a database", r: [["v","ByteByteGo · How to choose the right database",Y("kkeFE6iRfMM")],["r","karanpratapsingh · SQL vs NoSQL",K("sql-vs-nosql-databases")],["r","Primer · SQL or NoSQL",P("sql-or-nosql")]], p: "Pick a database for each and explain why: payments, chat messages, user sessions, social graph, metrics." },
+  { id: "nosql-types", t: "NoSQL types: key-value, document, wide column, graph, time series", r: [["v","Gaurav Sen · Introduction to NoSQL · 26 min",Y("xQnIN9bW0og")],["r","karanpratapsingh · NoSQL databases",K("nosql-databases")]], p: "Make a table: type → example product (Redis, MongoDB, Cassandra, Neo4j, InfluxDB) → one use case." },
+  { id: "acid", t: "ACID, BASE and transactions", r: [["v","ByteByteGo · ACID properties",Y("GAe5oB742dw")],["r","karanpratapsingh · ACID and BASE",K("acid-and-base-consistency-models")],["r","karanpratapsingh · Transactions",K("transactions")]], p: "In Postgres with two psql sessions, show a non-repeatable read under READ COMMITTED, then show REPEATABLE READ preventing it." },
+  { id: "indexes", t: "Database indexes", r: [["v","Hussein Nasser · What is a database index",Y("Jemuod4wKWo")],["r","karanpratapsingh · Indexes",K("indexes")]], p: "Create a Postgres table with 1M rows. Run EXPLAIN ANALYZE on a query before and after adding an index, and compare." },
+  { id: "sql-tuning", t: "SQL tuning, N+1 queries, normalization vs denormalization", r: [["r","karanpratapsingh · Normalization and denormalization",K("normalization-and-denormalization")],["r","Primer · SQL tuning",P("sql-tuning")],["v","ByteByteGo · Optimizing SQL queries",Y("BHwzDmr6d7s")]], p: "Write an endpoint with an N+1 query (list posts and their authors), count the queries, then fix it with a JOIN or batch load." },
+  { id: "replication", t: "Replication: leader-follower, multi-leader", r: [["r","karanpratapsingh · Database replication",K("database-replication")],["r","Primer · Replication",P("replication")],["v","ByteByteGo · 7 strategies to scale your database",Y("_1IKwnbscQU")]], p: "Lab: set up a Postgres primary and a read replica in Docker. Write to the primary, read from the replica, and observe replication lag." },
+  { id: "sharding", t: "Sharding and partitioning", r: [["v","Gaurav Sen · What is database sharding · 9 min",Y("5faMjKuB9bc")],["r","karanpratapsingh · Sharding",K("sharding")]], p: "Lab: shard a users table across 2 Postgres containers by user_id % 2. Then write down what breaks when you add a third shard." },
+  { id: "consistent-hashing", t: "Consistent hashing", r: [["v","Gaurav Sen · Consistent hashing · 11 min",Y("zaRkONvyGr8")],["v","ByteByteGo · Consistent hashing",Y("UF9Iqmg94tk")],["r","karanpratapsingh · Consistent hashing",K("consistent-hashing")]], p: "Code a hash ring with virtual nodes (~50 lines). Add and remove a node and count how many keys move, compared with plain modulo hashing." },
+  { id: "federation", t: "Federation", r: [["r","karanpratapsingh · Database federation",K("database-federation")],["r","Primer · Federation",P("federation")]], p: "Split an e-commerce DB into users, products and orders databases. Which queries now need joins in application code?" },
+  { id: "storage", t: "Storage: block, file, object, RAID, HDFS", r: [["r","karanpratapsingh · Storage",K("storage")],["v","ByteByteGo · Memory and storage systems",Y("lX4CrbXMsNQ")]], p: "Pick the storage type for: user profile photos, a database's data files, shared config across servers, and 10 TB of logs." },
+  { id: "lsm", t: "How databases scale writes: logs, LSM trees vs B-trees", r: [["v","Gaurav Sen · How databases scale writes · 17 min",Y("_5vrfuwhvlQ")]], p: "In 5 lines, explain why Cassandra writes fast and why Postgres reads fast." }
+]},
+{ id: "distributed", name: "Consistency and distributed systems", week: "Week 4", note: "The trade-offs interviewers probe in deep dives.", items: [
+  { id: "cap", t: "CAP and PACELC", r: [["v","ByteByteGo · CAP theorem simplified",Y("BHqjEjzAicA")],["r","karanpratapsingh · CAP theorem",K("cap-theorem")],["r","karanpratapsingh · PACELC",K("pacelc-theorem")]], p: "Choose CP or AP and explain why for: a bank balance, Instagram like counts, a chat app, a seat booking system." },
+  { id: "consistency", t: "Consistency patterns: weak, eventual, strong", r: [["r","Primer · Consistency patterns",P("consistency-patterns")],["v","Gaurav Sen · Data consistency and trade-offs · 26 min",Y("m4q7VkgDWrM")]], p: "Give one real product feature that uses each consistency level." },
+  { id: "consensus", t: "Consensus and leader election (Raft)", r: [["r","Interactive · Raft visualized (thesecretlivesofdata)","http://thesecretlivesofdata.com/raft/"],["v","Gaurav Sen · Distributed consensus and replication · 16 min",Y("GeGxgmPTe4c")]], p: "Explain in your own words how a Raft leader is elected and what happens to writes during a network partition." },
+  { id: "dist-tx", t: "Distributed transactions: 2PC and Saga", r: [["r","karanpratapsingh · Distributed transactions",K("distributed-transactions")],["r","Azure · Saga pattern",AZ("saga")]], p: "Design an order → payment → inventory → shipping saga. Write the compensating action for each step." },
+  { id: "unique-ids", t: "Unique ID generation (Snowflake)", r: [["v","Nikhil Lohia · Design a unique ID generator",Y("ogOKDhOa_cs")]], p: "Implement a 64-bit Snowflake-style ID generator (timestamp + machine ID + sequence). Why not use UUIDs or DB auto-increment?" },
+  { id: "bloom", t: "Bloom filters", r: [["v","ByteByteGo · Bloom filters",Y("V3pzxngeLqw")]], p: "Implement a Bloom filter and measure its false-positive rate. Where would a username-taken check or a web crawler use one?" },
+  { id: "geo", t: "Geohashing and quadtrees", r: [["v","Gaurav Sen · QuadTrees and Hilbert curves · 22 min",Y("OcUKFIjhKu0")],["r","karanpratapsingh · Geohashing and quadtrees",K("geohashing-and-quadtrees")]], p: "Sketch how Uber finds drivers within 2 km of a rider. How do you handle a dense city vs an empty highway?" },
+  { id: "idempotency", t: "Idempotent operations", r: [["r","Stripe · Designing APIs with idempotency","https://stripe.com/blog/idempotency"]], p: "Add Idempotency-Key handling to a POST /payments endpoint so a retried request never charges twice." }
+]},
+{ id: "comms", name: "Communication and async processing", week: "Week 5", note: "APIs, real-time connections, queues and event-driven design.", items: [
+  { id: "api-design", t: "API design and REST", r: [["v","Gaurav Sen · What is an API and how to design it · 15 min",Y("_YlYuNMTCc8")],["v","ByteByteGo · What is a REST API",Y("-mN3VyJuCjM")],["v","ByteByteGo · API pagination",Y("14K_a2kKTxU")]], p: "Write the REST API for a URL shortener: endpoints, request/response JSON, status codes and pagination for 'my links'." },
+  { id: "api-styles", t: "REST vs gRPC vs GraphQL vs WebSocket", r: [["v","ByteByteGo · Top 6 API architecture styles",Y("4vLxWqE94l4")],["r","karanpratapsingh · REST, GraphQL, gRPC",K("rest-graphql-grpc")],["v","ByteByteGo · What is RPC / gRPC",Y("gnchfOojMk4")]], p: "Make a table of when to use each, with one real company example." },
+  { id: "realtime", t: "Long polling, WebSockets, Server-Sent Events", r: [["r","karanpratapsingh · Long polling, WebSockets, SSE",K("long-polling-websockets-server-sent-events-sse")],["v","Be A Better Dev · Short vs long polling vs WebSockets",Y("ZBM28ZPlin8")]], p: "Build a tiny WebSocket chat locally (Node 'ws' or Python 'websockets'). How would it work with 2 servers behind a load balancer?" },
+  { id: "mq", t: "Message queues", r: [["v","Gaurav Sen · What is a message queue · 10 min",Y("oUJbuFMyBDk")],["r","karanpratapsingh · Message queues",K("message-queues")]], p: "Lab: run RabbitMQ in Docker with one producer and two competing consumers. Kill a consumer mid-message and see what happens to it." },
+  { id: "pubsub", t: "Publish-subscribe", r: [["v","Gaurav Sen · Publisher-subscriber model · 11 min",Y("FMhbR_kQeHw")],["r","karanpratapsingh · Publish-subscribe",K("publish-subscribe")]], p: "Extend the lab: one 'order placed' event fans out to an email service and an analytics service." },
+  { id: "kafka", t: "Kafka (and Kafka vs RabbitMQ)", r: [["v","ByteByteGo · Apache Kafka in 3 minutes",Y("HZklgPkboro")],["v","ByteByteGo · Why is Kafka fast",Y("UNUz1-msbOM")],["v","ByteByteGo · Kafka vs RabbitMQ",Y("x4k1XEjNzYQ")]], p: "Lab: run Kafka in Docker. Create a topic with 3 partitions and a consumer group of 2, and watch how partitions are assigned." },
+  { id: "async", t: "Background jobs, task queues and back pressure", r: [["r","Primer · Asynchronism (task queues, back pressure)",P("asynchronism")]], p: "Design image-thumbnail generation with a job queue. What happens when uploads arrive faster than workers can process them?" },
+  { id: "eda", t: "Event-driven architecture, event sourcing, CQRS", r: [["v","Gaurav Sen · What's an event-driven system · 15 min",Y("rJHTK2TfZ1I")],["r","karanpratapsingh · Event-driven architecture",K("event-driven-architecture-eda")],["r","karanpratapsingh · Event sourcing",K("event-sourcing")],["r","karanpratapsingh · CQRS",K("command-and-query-responsibility-segregation-cqrs")]], p: "Model a bank account as a list of events (deposit, withdraw) and rebuild the balance from them. Where would a CQRS read model help?" },
+  { id: "microservices", t: "Monolith vs microservices, service discovery, API gateway", r: [["v","ByteByteGo · What are microservices really about",Y("lTAcCNbJ7KE")],["v","Gaurav Sen · Microservice architecture · 8 min",Y("qYhRvH9tJKw")],["r","karanpratapsingh · Monoliths and microservices",K("monoliths-and-microservices")],["r","karanpratapsingh · Service discovery",K("service-discovery")],["r","karanpratapsingh · API gateway",K("api-gateway")]], p: "Split a monolithic e-commerce app into services on paper. Draw the service boundaries, the API gateway, and how services find each other." },
+  { id: "rate-limit", t: "Rate limiting (token bucket, sliding window)", r: [["v","ByteByteGo · Rate limiter system design",Y("YXkOdWBwqaA")],["r","karanpratapsingh · Rate limiting",K("rate-limiting")]], p: "Implement a token bucket rate limiter backed by Redis. Return 429 with a Retry-After header when it's exceeded." }
+]},
+{ id: "ops", name: "Reliability, security and operations", week: "Week 6", note: "Keeping systems up, observable and secure.", items: [
+  { id: "resilience", t: "Timeouts, retries with backoff and jitter, circuit breakers", r: [["r","AWS Builders' Library · Timeouts, retries and backoff with jitter","https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"],["r","karanpratapsingh · Circuit breaker",K("circuit-breaker")],["v","ByteByteGo · Top 7 distributed system patterns",Y("nH4qjmP2KEE")]], p: "Wrap an HTTP client with a timeout, retries with exponential backoff and jitter, and a circuit breaker. Test it against a deliberately failing server." },
+  { id: "overload", t: "Load shedding and cascading failures", r: [["r","Google SRE book · Addressing cascading failures","https://sre.google/sre-book/addressing-cascading-failures/"],["r","AWS Builders' Library · Load shedding","https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/"]], p: "Take one of your designs. If one dependency becomes 10× slower, trace what fails next, then add a fix at each step." },
+  { id: "sla", t: "SLA, SLO, SLI", r: [["r","karanpratapsingh · SLA, SLO, SLI",K("sla-slo-sli")]], p: "Write the SLIs and SLOs for a URL shortener: availability, redirect latency (p99) and an error budget." },
+  { id: "monitoring", t: "Monitoring and observability (golden signals)", r: [["r","Google SRE book · Monitoring distributed systems","https://sre.google/sre-book/monitoring-distributed-systems/"]], p: "Lab: run Prometheus and Grafana in Docker, scrape your app, and build a dashboard for the four golden signals: latency, traffic, errors, saturation." },
+  { id: "dr", t: "Disaster recovery (RTO and RPO)", r: [["r","karanpratapsingh · Disaster recovery",K("disaster-recovery")]], p: "Set an RTO and RPO for a bank, a blog and a chat app. Pick a backup or replication strategy that meets each." },
+  { id: "containers", t: "VMs, containers and Kubernetes", r: [["r","karanpratapsingh · VMs and containers",K("virtual-machines-vms-and-containers")],["v","ByteByteGo · Kubernetes in 6 minutes",Y("TlHvYWVUZyc")],["v","ByteByteGo · Bare metal vs VMs vs containers",Y("Jz8Gs4UHTO8")]], p: "Deploy your lab app on kind or minikube with 3 replicas and a Service. Delete a pod and watch Kubernetes replace it." },
+  { id: "deploy", t: "Deployment strategies and CI/CD", r: [["v","ByteByteGo · Top 5 deployment strategies",Y("AWVTKBUnoIg")],["v","ByteByteGo · CI/CD in 5 minutes",Y("42UP1fxi2SY")]], p: "Compare blue-green, canary and rolling deployments: how each rolls back, and what each costs." },
+  { id: "auth", t: "Auth: OAuth 2.0, OIDC, SSO, sessions vs JWT", r: [["v","ByteByteGo · OAuth 2 explained",Y("ZV5yTm4pT8g")],["v","ByteByteGo · Session vs JWT",Y("fyTxwIa-1U0")],["r","karanpratapsingh · OAuth 2.0 and OIDC",K("oauth-20-and-openid-connect-oidc")],["r","karanpratapsingh · Single sign-on",K("single-sign-on-sso")]], p: "Draw the OAuth authorization-code flow for 'Sign in with Google'. Where is each token stored?" },
+  { id: "tls", t: "SSL, TLS, mTLS and API security", r: [["r","karanpratapsingh · SSL, TLS, mTLS",K("ssl-tls-mtls")],["v","ByteByteGo · Top 12 API security tips",Y("6WZ6S-qmtqY")]], p: "Generate a self-signed certificate and serve your lab app over HTTPS with Nginx. Then check your API against the 12 tips." }
+]},
+{ id: "patterns", name: "Cloud design patterns", week: "Skim · weeks 6–7", note: "The roadmap says you only need an overview of these. For each one, read the Azure page and write one line: the problem it solves and a real example.", compact: true, items: [
+  ["queue-based-load-leveling","Queue-based load leveling"],["competing-consumers","Competing consumers"],["publisher-subscriber","Publisher/subscriber"],["priority-queue","Priority queue"],["pipes-and-filters","Pipes and filters"],["claim-check","Claim check"],["async-request-reply","Asynchronous request-reply"],["choreography","Choreography"],["sequential-convoy","Sequential convoy"],["scheduler-agent-supervisor","Scheduler agent supervisor"],
+  ["materialized-view","Materialized view"],["index-table","Index table"],["valet-key","Valet key"],["static-content-hosting","Static content hosting"],["sharding","Sharding"],["event-sourcing","Event sourcing"],["cqrs","CQRS"],
+  ["strangler-fig","Strangler fig"],["sidecar","Sidecar"],["ambassador","Ambassador"],["backends-for-frontends","Backends for frontends"],["anti-corruption-layer","Anti-corruption layer"],["gateway-routing","Gateway routing"],["gateway-offloading","Gateway offloading"],["gateway-aggregation","Gateway aggregation"],["external-configuration-store","External configuration store"],["compute-resource-consolidation","Compute resource consolidation"],["leader-election","Leader election"],
+  ["circuit-breaker","Circuit breaker"],["retry","Retry"],["bulkhead","Bulkhead"],["throttling","Throttling"],["compensating-transaction","Compensating transaction"],["health-endpoint-monitoring","Health endpoint monitoring"],["deployment-stamp","Deployment stamps"],["geodes","Geodes"],
+  ["federated-identity","Federated identity"],["gatekeeper","Gatekeeper"]
+].map(([s, t]) => ({ id: "pat-" + s, t, r: [["r", "Azure · " + t, AZ(s)]] })) },
+{ id: "antipatterns", name: "Performance antipatterns", week: "Skim · week 7", note: "For each one, read the Azure page and write down the symptom and the fix in two lines. Then check whether any of your lab apps has it.", compact: true, items: [
+  ["busy-database","Busy database"],["busy-front-end","Busy front end"],["chatty-io","Chatty I/O"],["extraneous-fetching","Extraneous fetching"],["improper-instantiation","Improper instantiation"],["monolithic-persistence","Monolithic persistence"],["no-caching","No caching"],["noisy-neighbor","Noisy neighbor"],["retry-storm","Retry storm"],["synchronous-io","Synchronous I/O"]
+].map(([s, t]) => ({ id: "anti-" + s, t, r: [["r", "Azure · " + t, AP(s)]] })) },
+{ id: "designs", name: "Practice designs", week: "Weeks 7–9", note: "For each one, design it yourself on Excalidraw in 45 minutes first: requirements → estimates → API → data model → diagram → deep dives → bottlenecks. Then compare with the solutions and note what you missed.", items: [
+  { id: "d-url", t: "URL shortener (Bitly)", r: [["v","Hello Interview · Design Bitly · 59 min",Y("iUU4O1sWtJA")],["r","karanpratapsingh · URL shortener",K("url-shortener")],["r","Primer · Pastebin solution",PS("pastebin")]], p: "Your first full design. Time it: 45 minutes, then compare." },
+  { id: "d-ratelimiter", t: "Distributed rate limiter", r: [["v","Hello Interview · Distributed rate limiter",Y("MIJFyUPG4Z4")]], p: "Design it for 1M requests/sec across many API servers. Where does the counter live?" },
+  { id: "d-feed", t: "Twitter / news feed", r: [["v","Hello Interview · FB news feed",Y("Qj4-GruzyDU")],["v","Gaurav Sen · Instagram news feed · 24 min",Y("QmX2NPkJTKg")],["r","Primer · Twitter timeline solution",PS("twitter")],["r","karanpratapsingh · Twitter",K("twitter")]], p: "Decide fan-out on write vs fan-out on read. How do you handle a celebrity with 100M followers?" },
+  { id: "d-chat", t: "WhatsApp / chat system", r: [["v","Hello Interview · Design WhatsApp",Y("cr6p0n0N-VA")],["v","Gaurav Sen · WhatsApp system design · 25 min",Y("vvhC64hQZMk")],["r","karanpratapsingh · WhatsApp",K("whatsapp")]], p: "Cover message delivery to offline users, read receipts and group chats." },
+  { id: "d-uber", t: "Uber / ride sharing", r: [["v","Hello Interview · Design Uber · 63 min",Y("lsKU38RKQSo")],["r","karanpratapsingh · Uber",K("uber")]], p: "Focus on driver location updates and matching. Reuse your geohash notes." },
+  { id: "d-video", t: "YouTube / Netflix", r: [["v","Hello Interview · Design YouTube · 42 min",Y("IUrQ5_g3XKs")],["v","Gaurav Sen · How Netflix onboards content · 11 min",Y("x9Hrn0oNmJM")],["r","karanpratapsingh · Netflix",K("netflix")]], p: "Cover upload, transcoding pipeline, CDN delivery and adaptive bitrate." },
+  { id: "d-dropbox", t: "Dropbox / Google Drive", r: [["v","Hello Interview · Design Dropbox",Y("_UZ1ngy-kOI")]], p: "Cover chunked uploads, sync between devices and conflict handling." },
+  { id: "d-ticket", t: "Ticketmaster (booking with contention)", r: [["v","Hello Interview · Design Ticketmaster · 58 min",Y("fhdPyoO6aXI")]], p: "How do you stop two people from booking the same seat during a 10M-user sale?" },
+  { id: "d-crawler", t: "Web crawler", r: [["v","Hello Interview · Design a web crawler · 65 min",Y("krsuaUp__pM")],["r","Primer · Web crawler solution",PS("web_crawler")]], p: "Cover politeness, deduplication (Bloom filter) and crawling 1B pages in a week." },
+  { id: "d-topk", t: "Top-K / ad click aggregator", r: [["v","Hello Interview · Top-K",Y("y-tA2NW4LNY")],["v","Hello Interview · Ad click aggregator",Y("Zcv_899yqhI")]], p: "Design trending videos for the last hour. Batch vs stream processing?" },
+  { id: "d-search", t: "Search (Facebook post search)", r: [["v","Hello Interview · FB post search",Y("l38XL9914fs")],["v","ByteByteGo · How search really works",Y("TByRaraQqW4")]], p: "Build an inverted index for posts. How do new posts become searchable within seconds?" },
+  { id: "d-live", t: "Live comments", r: [["v","Hello Interview · Design live comments · 56 min",Y("LjLx0fCd1k8")]], p: "Push comments to 1M viewers of one live stream. Reuse your WebSocket notes." },
+  { id: "d-tinder", t: "Tinder", r: [["v","Hello Interview · Design Tinder · 73 min",Y("18Fg5Akhkqw")],["v","Gaurav Sen · Tinder as microservices · 37 min",Y("tndzLznxq40")]], p: "Cover the recommendation queue and detecting a mutual swipe." },
+  { id: "d-leetcode", t: "LeetCode (online judge)", r: [["v","Hello Interview · Design LeetCode · 63 min",Y("1xHADtekTNg")]], p: "Run untrusted code safely and handle a contest with 100K submissions." },
+  { id: "d-tiktok", t: "TikTok", r: [["v","Gaurav Sen with sudoCODE · TikTok architecture · 46 min",Y("07BVxmVFDGY")]], p: "Compare with your YouTube design: what changes for short videos and a For You feed?" },
+  { id: "d-aws", t: "Scale a system on AWS to millions of users", r: [["r","Primer · Scaling AWS solution",PS("scaling_aws")]], p: "Redraw your Week 1 '1 user to 1M users' diagram with what you know now, then compare." }
+]},
+{ id: "interview", name: "Interview readiness", week: "Week 10", note: "Turn knowledge into a clear 45-minute performance.", items: [
+  { id: "framework", t: "Interview framework and common mistakes", r: [["r","Primer · How to approach a system design question",P("how-to-approach-a-system-design-interview-question")],["v","Gaurav Sen · 5 tips for system design interviews · 8 min",Y("CtmBGH8MkX4")],["r","karanpratapsingh · System design interviews",K("system-design-interviews")]], p: "Write your own one-page template with the steps and a time budget for each. Use it in every design from now on." },
+  { id: "mock1", t: "Mock interview #1", r: [], p: "With a friend: one of you interviews, the other designs out loud for 45 minutes. Swap. Write down 3 things to improve." },
+  { id: "mock2", t: "Mock interview #2", r: [], p: "Pick a design you haven't practised. Focus on fixing the 3 things from mock #1." },
+  { id: "mock3", t: "Mock interview #3", r: [], p: "Ask the interviewer to push hard on one deep dive (database choice, scaling or failure handling)." },
+  { id: "notes-repo", t: "Publish your system-design-notes repo", r: [], p: "Clean up your summaries and Excalidraw diagrams on GitHub and link the repo on your resume and LinkedIn." },
+  { id: "cert", t: "OCI Architect Associate certification", r: [["r","Oracle MyLearn","https://mylearn.oracle.com"]], p: "Confirm the exam shows as free, complete the learning path and take the exam." }
+]}
+];
+
+// ---------- state ----------
+const LS_KEY = "sd-checklist-v1";
+const UI_KEY = "sd-checklist-ui-v1";
+let done = {};
+let filter = "all";
+let openSecs = null;
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+done = lsGet(LS_KEY) || {};
+const ui = lsGet(UI_KEY) || {};
+if (ui.filter) filter = ui.filter;
+openSecs = ui.open || null;
+
+const allIds = [];
+SECTIONS.forEach(s => s.items.forEach(i => allIds.push(i.id)));
+
+// ---------- render ----------
+const secRoot = document.getElementById("sections");
+const refs = {};
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+SECTIONS.forEach((s, si) => {
+  const d = el("details", "sec"); d.id = s.id;
+  d.open = openSecs ? openSecs.includes(s.id) : si === 0;
+  const sum = el("summary");
+  const top = el("div", "sec-top");
+  const tt = el("div", "sec-title");
+  tt.append(el("span", "chev", "›"), el("h2", null, s.name), el("span", "week", s.week));
+  const cnt = el("span", "count");
+  top.append(tt, cnt);
+  const m = el("div", "meter"); const mf = el("span"); m.append(mf);
+  sum.append(top, m);
+  d.append(sum);
+  if (s.note) d.append(el("p", "sec-note", s.note));
+  const ul = el("ul", "items");
+  s.items.forEach(it => {
+    const li = el("li", "item"); li.dataset.id = it.id;
+    const cb = el("input"); cb.type = "checkbox"; cb.id = "cb-" + it.id;
+    cb.setAttribute("aria-label", it.t);
+    cb.addEventListener("change", () => toggle(it.id, cb.checked));
+    const body = el("div", "body");
+    const lab = el("label", "t", it.t); lab.htmlFor = cb.id;
+    body.append(lab);
+    if (it.r && it.r.length) {
+      const res = el("div", "res");
+      it.r.forEach(([k, label, url], idx) => {
+        const a = el("a", k === "v" ? "v" : "r"); a.href = url; a.target = "_blank"; a.rel = "noopener";
+        if (idx === 0 && it.r.length > 1) a.classList.add("best");
+        a.append(el("span", "k", k === "v" ? "VIDEO" : "READ"), el("span", "n", label));
+        res.append(a);
+      });
+      body.append(res);
+    }
+    if (it.p) { const pr = el("div", "practice"); pr.append(el("span", "label", "Practice"), document.createTextNode(it.p)); body.append(pr); }
+    li.append(cb, body);
+    ul.append(li);
+    refs[it.id] = { li, cb, sec: s.id };
+  });
+  const empty = el("div", "empty"); empty.hidden = true;
+  d.append(ul, empty);
+  d.addEventListener("toggle", saveUi);
+  secRoot.append(d);
+  s._r = { cnt, mf, empty, d };
+});
+
+function update() {
+  let total = 0, n = 0, next = null;
+  SECTIONS.forEach(s => {
+    let c = 0, shown = 0;
+    s.items.forEach(it => {
+      const isDone = !!done[it.id];
+      const r = refs[it.id];
+      r.cb.checked = isDone;
+      r.li.classList.toggle("done", isDone);
+      const show = filter === "all" || (filter === "done" ? isDone : !isDone);
+      r.li.hidden = !show; if (show) shown++;
+      if (isDone) c++; else if (!next) next = { it, s };
+    });
+    total += s.items.length; n += c;
+    s._r.cnt.textContent = c + " / " + s.items.length;
+    s._r.mf.style.width = (s.items.length ? (c / s.items.length) * 100 : 0) + "%";
+    s._r.empty.hidden = shown > 0;
+    s._r.empty.textContent = filter === "done" ? "Nothing ticked in this section yet." : "Everything in this section is done.";
+  });
+  const pct = total ? Math.round((n / total) * 100) : 0;
+  document.getElementById("pct").textContent = pct + "%";
+  document.getElementById("totals").textContent = n + " of " + total + " topics done";
+  document.getElementById("meterFill").style.width = pct + "%";
+  document.getElementById("meter").setAttribute("aria-valuenow", String(pct));
+  const nl = document.getElementById("nextLink");
+  if (next) { nl.textContent = next.it.t + " · " + next.s.name; nl.href = "#" + next.s.id; nl.dataset.sec = next.s.id; nl.dataset.item = next.it.id; }
+  else { nl.textContent = "All done. Time for more mock interviews."; nl.removeAttribute("href"); }
+}
+
+document.getElementById("nextLink").addEventListener("click", e => {
+  const sid = e.currentTarget.dataset.sec, iid = e.currentTarget.dataset.item;
+  if (!sid) return;
+  e.preventDefault();
+  const r = refs[iid]; const sec = SECTIONS.find(s => s.id === sid);
+  sec._r.d.open = true;
+  r.li.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+  r.cb.focus({ preventScroll: true });
+});
+
+document.querySelectorAll(".filters button").forEach(b => {
+  b.addEventListener("click", () => {
+    filter = b.dataset.f;
+    document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    if (filter !== "all") SECTIONS.forEach(s => (s._r.d.open = true));
+    update(); saveUi();
+  });
+  b.setAttribute("aria-pressed", String(b.dataset.f === filter));
+});
+
+function saveUi() {
+  lsSet(UI_KEY, { filter, open: SECTIONS.filter(s => s._r.d.open).map(s => s.id) });
+}
+
+// ---------- persistence: this browser ----------
+const saveEl = document.getElementById("saveState");
+function canStore() { try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return true; } catch (e) { return false; } }
+saveEl.textContent = canStore() ? "Progress is saved in this browser" : "Progress can't be saved in this browser (private mode?)";
+
+function toggle(id, val) {
+  if (val) done[id] = true; else delete done[id];
+  lsSet(LS_KEY, done);
+  update();
+}
+
+update();
+</script>
+</body>
+</html>
